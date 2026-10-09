@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Marketing Automation System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="toast" class="toast-notification"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><span style="color:var(--brand-red)">MA</span> System</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="Dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-view="Campaigns">
+                    <span class="icon">📢</span> Campaigns
+                </a>
+                <a href="#" class="nav-item" data-view="Templates">
+                    <span class="icon">📝</span> Templates
+                </a>
+                <a href="#" class="nav-item" data-view="Subscribers">
+                    <span class="icon">👥</span> Subscribers
+                </a>
+                <a href="#" class="nav-item" data-view="Analytics">
+                    <span class="icon">📈</span> Analytics
+                </a>
+                <a href="#" class="nav-item" data-view="Workflows">
+                    <span class="icon">⚡</span> Workflows
+                </a>
+                <a href="#" class="nav-item" data-view="LandingPages">
+                    <span class="icon">🌐</span> Landing Pages
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h1 class="page-title" id="pageTitle">Dashboard Overview</h1>
+                <div class="user-menu">
+                    <!-- Bonus Feature: Export Report -->
+                    <button id="exportReportBtn" class="btn-outline" style="border:none; color: var(--gray-500);" title="Export PDF/CSV">📥 Export</button>
+                    <!-- Bonus Feature: Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="btn-outline" style="border:none; font-size: 1.2rem;" title="Toggle Dark Mode">🌙</button>
+                    <span class="user-name" id="userName">User Name</span>
+                    <button id="logoutBtn" class="btn-outline">Logout</button>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="content-area view-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Campaigns</h3>
+                        <div class="value" id="statTotalCampaigns">0</div>
+                        <div class="trend positive">↑ 12% from last month</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Campaigns</h3>
+                        <div class="value" id="statActiveCampaigns">0</div>
+                        <div class="trend">Current running</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Subscribers</h3>
+                        <div class="value" id="statTotalSubscribers">0</div>
+                        <div class="trend positive">↑ 5% from last month</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Emails Sent (YTD)</h3>
+                        <div class="value" id="statTotalSent">0</div>
+                        <div class="trend positive">↑ 22% from last month</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section (Bonus Feature) -->
+                <div class="section-header" style="margin-top: 20px;">
+                    <h2 class="section-title">Performance Analytics</h2>
+                </div>
+                <div class="table-container" style="padding: 20px; margin-bottom: 32px; height: 300px;">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+
+                <!-- Recent Campaigns -->
+                <div class="section-header">
+                    <h2 class="section-title">Recent Campaigns</h2>
+                    <button id="createCampaignBtn" class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 14px;">+ Create Campaign</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campaign Info</th>
+                                <th>Status</th>
+                                <th>Sent</th>
+                                <th>Open Rate</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentCampaignsBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Campaigns View -->
+            <div id="view-campaigns" class="content-area view-section hidden">
+                
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 24px;">
+                    <div style="background-color: var(--brand-red-light); padding: 8px; border-radius: 8px; color: var(--brand-red); border: 1px solid rgba(220, 38, 38, 0.2); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </div>
+                    <h2 class="section-title" style="margin: 0; font-size: 24px;">Campaign Statuses & Types</h2>
+                </div>
+
+                <div class="status-cards-row">
+                    <div class="status-card">
+                        <div class="status-header draft-text">📝 Draft</div>
+                        <div class="status-desc">Campaign in draft mode</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-header scheduled-text">📅 Scheduled</div>
+                        <div class="status-desc">Scheduled for future send</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-header progress-text">🔄 In Progress</div>
+                        <div class="status-desc">Campaign in progress</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-header completed-text">✅ Completed</div>
+                        <div class="status-desc">Campaign completed</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-header cancelled-text">❌ Cancelled</div>
+                        <div class="status-desc">Campaign cancelled</div>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 32px;">
+                    <div style="display:flex; gap:10px; align-items: center;">
+                        <input type="text" id="campaignSearch" placeholder="Search campaigns..." class="input-field" style="width: 250px;">
+                        <select class="input-field" style="width: 150px;">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Drafts</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary create-campaign-trigger" style="width: auto; padding: 8px 16px;">+ New Campaign</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campaign Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>A/B Test</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allCampaignsBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Templates View (Core: Email Template Management, Bonus: Email Preview) -->
+            <div id="view-templates" class="content-area view-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title">Email Templates</h2>
+                    <button class="btn-primary mock-action-btn" data-msg="Simulated: Opening Template Builder..." style="width: auto; padding: 8px 16px;">+ New Template</button>
+                </div>
+                <div class="stats-grid" id="templatesGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Subscribers View (Core: Subscriber List, Bonus: Audience Segmentation) -->
+            <div id="view-subscribers" class="content-area view-section hidden">
+                <div class="section-header">
+                    <div style="display:flex; gap:10px; align-items: center;">
+                        <input type="text" placeholder="Search subscribers..." class="input-field" style="width: 250px;">
+                        <select class="input-field" style="width: 200px;">
+                            <option>All Segments</option>
+                            <option>Highly Engaged</option>
+                            <option>Inactive</option>
+                            <option>VIP Customers</option>
+                        </select>
+                    </div>
+                    <button id="openSubscriberBtn" class="btn-primary" style="width: auto; padding: 8px 16px;">+ Add Subscriber</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Segment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subscribersBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div id="view-analytics" class="content-area view-section hidden">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Average Open Rate</h3>
+                        <div class="value">24.8%</div>
+                        <div class="trend positive">↑ 2.1%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Click Rate</h3>
+                        <div class="value">4.2%</div>
+                        <div class="trend negative">↓ 0.5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Unsubscribe Rate</h3>
+                        <div class="value">0.12%</div>
+                        <div class="trend positive">Stable</div>
+                    </div>
+                </div>
+                <div class="table-container" style="padding: 20px; height: 350px;">
+                    <canvas id="detailedAnalyticsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Workflows View -->
+            <div id="view-workflows" class="content-area view-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title">Automation Workflows</h2>
+                    <button id="openWorkflowBtn" class="btn-primary" style="width: auto; padding: 8px 16px;">+ Create Workflow</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Workflow Name</th>
+                                <th>Trigger</th>
+                                <th>Active Subscribers</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Welcome Series</td>
+                                <td>New Subscriber</td>
+                                <td>1,245</td>
+                                <td><span class="status active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Abandoned Cart</td>
+                                <td>Cart checkout incomplete</td>
+                                <td>89</td>
+                                <td><span class="status active">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Landing Pages View -->
+            <div id="view-landingpages" class="content-area view-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title">Landing Pages</h2>
+                    <button id="openPageBuilderBtn1" class="btn-primary" style="width: auto; padding: 8px 16px;">+ Build Page</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Spring Promo Page</h3>
+                        <p style="color:var(--gray-500); margin: 10px 0;">Published • 1.2k Views</p>
+                        <button id="openPageBuilderBtn2" class="btn-outline">Edit Page</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Campaign Modal -->
+    <div id="campaignModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Campaign</h2>
+                <button id="closeModalBtn" class="action-btn" style="font-size: 1.5rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createCampaignForm">
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label class="input-label">Campaign Name</label>
+                        <input type="text" id="campaignName" class="input-field" required placeholder="e.g. Spring Sale 2024">
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label class="input-label">Campaign Type</label>
+                        <select id="campaignType" class="input-field" required>
+                            <option value="Broadcast">Broadcast</option>
+                            <option value="Automation">Automation</option>
+                        </select>
+                    </div>
+                    <!-- Bonus Feature: Simulated A/B Testing Toggle -->
+                    <div class="input-group" style="margin-bottom: 15px; display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="abTestToggle">
+                        <label class="input-label" style="margin:0;">Enable A/B Testing (Subject Line)</label>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                        <button type="button" id="cancelModalBtn" class="btn btn-outline" style="width: auto; padding: 8px 16px; margin: 0;">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="width: auto; padding: 8px 16px;">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Preview Modal -->
+    <div id="previewModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Email Preview & Testing</h2>
+                <button class="action-btn close-preview" style="font-size: 1.5rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px;">
+                    <h1 style="color: var(--brand-red);">Your Company</h1>
+                    <h3 style="margin: 10px 0;">Special Offer Inside!</h3>
+                    <p>This is a simulated email preview rendering...</p>
+                    <button class="btn-primary" style="margin-top: 15px; width:auto;">Shop Now</button>
+                </div>
+                <button class="btn-outline close-preview" style="width:100%">Close Preview</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Builder Modal -->
+    <div id="workflowModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 700px; background-color: var(--bg-main);">
+            <div class="modal-header" style="background-color: var(--white); border-radius: 12px 12px 0 0;">
+                <h2>Visual Workflow Builder</h2>
+                <button id="closeWorkflowBtn" class="action-btn" style="font-size: 1.5rem;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 40px; text-align: center;">
+                
+                <!-- Step 1: Trigger -->
+                <div style="background: var(--white); border: 2px solid var(--brand-red); border-radius: 8px; padding: 15px; width: 250px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 12px; color: var(--brand-red); font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">Trigger</div>
+                    <strong>New Subscriber Joins</strong>
+                </div>
+
+                <!-- Arrow -->
+                <div style="color: var(--gray-400); font-size: 24px; margin: 10px 0;">↓</div>
+
+                <!-- Step 2: Action -->
+                <div style="background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 15px; width: 250px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 12px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">Action (Wait 1 Hour)</div>
+                    <strong>Send "Welcome Email"</strong>
+                </div>
+
+                <!-- Arrow -->
+                <div style="color: var(--gray-400); font-size: 24px; margin: 10px 0;">↓</div>
+
+                <!-- Add Step Button -->
+                <button class="btn-outline mock-action-btn" data-msg="Simulated: Adding a new Workflow step..." style="border-radius: 50%; width: 40px; height: 40px; padding: 0; font-size: 20px; line-height: 40px; margin: 0 auto; display: block;">+</button>
+
+                <div style="margin-top: 40px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button class="btn-primary" id="saveWorkflowBtn" style="width: auto; padding: 8px 16px;">Save & Activate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subscriber Modal -->
+    <div id="subscriberModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Subscriber</h2>
+                <button id="closeSubscriberBtn" class="action-btn" style="font-size: 1.5rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addSubscriberForm">
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label class="input-label">Email Address</label>
+                        <input type="email" id="subEmail" class="input-field" required placeholder="subscriber@example.com">
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label class="input-label">Full Name</label>
+                        <input type="text" id="subName" class="input-field" required placeholder="John Doe">
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label class="input-label">Assign Segment</label>
+                        <select id="subSegment" class="input-field">
+                            <option value="General">General</option>
+                            <option value="VIP Customers">VIP Customers</option>
+                            <option value="Highly Engaged">Highly Engaged</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                        <button type="button" id="cancelSubscriberBtn" class="btn btn-outline" style="width: auto; padding: 8px 16px; margin: 0;">Cancel</button>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 8px 16px;">Add Subscriber</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Builder Modal (Fullscreen Simulation) -->
+    <div id="pageBuilderModal" class="modal-overlay hidden" style="background-color: var(--bg-main); color: var(--gray-800);">
+        <div style="width: 100vw; height: 100vh; display: flex; flex-direction: column;">
+            <!-- Builder Topbar -->
+            <div style="height: 60px; background: var(--white); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
+                <div style="font-weight: 600;">Website Builder <span style="color: var(--gray-400); font-weight: normal; margin-left: 10px;">Spring Promo Page</span></div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-outline" id="closePageBuilderBtn" style="padding: 6px 12px;">Exit</button>
+                    <button class="btn-primary" id="savePageBuilderBtn" style="padding: 6px 12px; width: auto;">Save & Publish</button>
+                </div>
+            </div>
+            
+            <!-- Builder Body -->
+            <div style="display: flex; flex: 1; overflow: hidden;">
+                <!-- Builder Sidebar -->
+                <div style="width: 250px; background: var(--white); border-right: 1px solid var(--gray-200); padding: 20px; overflow-y: auto;">
+                    <h4 style="margin-bottom: 15px; color: var(--gray-500); text-transform: uppercase; font-size: 12px;">Drag Elements</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; color: var(--gray-800);">
+                        <div class="draggable-item" draggable="true" data-type="text" style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 15px 5px; text-align: center; cursor: grab;">
+                            <div style="font-size: 20px;">📝</div>
+                            <div style="font-size: 11px; margin-top: 5px;">Text</div>
+                        </div>
+                        <div class="draggable-item" draggable="true" data-type="image" style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 15px 5px; text-align: center; cursor: grab;">
+                            <div style="font-size: 20px;">🖼️</div>
+                            <div style="font-size: 11px; margin-top: 5px;">Image</div>
+                        </div>
+                        <div class="draggable-item" draggable="true" data-type="button" style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 15px 5px; text-align: center; cursor: grab;">
+                            <div style="font-size: 20px;">🖱️</div>
+                            <div style="font-size: 11px; margin-top: 5px;">Button</div>
+                        </div>
+                        <div class="draggable-item" draggable="true" data-type="form" style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 15px 5px; text-align: center; cursor: grab;">
+                            <div style="font-size: 20px;">📝</div>
+                            <div style="font-size: 11px; margin-top: 5px;">Form</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Builder Canvas -->
+                <div style="flex: 1; padding: 40px; background: var(--gray-50); display: flex; justify-content: center; overflow-y: auto;">
+                    <div id="builderCanvas" style="width: 100%; max-width: 800px; background: var(--white); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-radius: 8px; min-height: 100%; padding: 40px; border: 2px dashed var(--gray-200);">
+                        <h1 contenteditable="true" style="text-align: center; font-size: 48px; margin-bottom: 20px; outline: 1px dashed transparent; transition: all 0.2s; cursor: text;" onmouseover="this.style.outlineColor='var(--brand-red)'" onmouseout="this.style.outlineColor='transparent'" onfocus="this.style.outlineColor='var(--brand-red)'" onblur="this.style.outlineColor='transparent'">Spring Huge Sale</h1>
+                        <p contenteditable="true" style="text-align: center; font-size: 20px; color: var(--gray-500); margin-bottom: 40px; outline: 1px dashed transparent; transition: all 0.2s; cursor: text;" onmouseover="this.style.outlineColor='var(--brand-red)'" onmouseout="this.style.outlineColor='transparent'" onfocus="this.style.outlineColor='var(--brand-red)'" onblur="this.style.outlineColor='transparent'">Get up to 50% off all marketing tools this week only.</p>
+                        
+                        <div style="background: var(--gray-100); height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gray-400); margin-bottom: 40px; outline: 1px dashed transparent; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.outlineColor='var(--brand-red)'" onmouseout="this.style.outlineColor='transparent'" onclick="window.showToast('Simulated: Opening Media Library...', 'success')">📸 Click to change Hero Image</div>
+                        
+                        <div style="text-align: center;">
+                            <div class="btn-primary" contenteditable="true" style="display: inline-block; width: auto; padding: 15px 30px; font-size: 18px; outline: 1px dashed transparent; transition: all 0.2s; cursor: text;" onmouseover="this.style.outlineColor='var(--brand-red)'" onmouseout="this.style.outlineColor='transparent'" onfocus="this.style.outlineColor='var(--brand-red)'" onblur="this.style.outlineColor='transparent'">Claim Offer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
